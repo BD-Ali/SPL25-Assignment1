@@ -105,7 +105,7 @@ public:
     /**
      * Function to set BPM
      */
-    void set_bpm(int new_bpm) { bpm = new_bpm; }
+    void set_bpm(int new_bpm) {bpm = new_bpm;} 
     
     // ========== ACCESSOR FUNCTIONS ==========
     std::string get_title() const { return title; }
