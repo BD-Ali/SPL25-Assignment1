@@ -63,8 +63,25 @@ bool DJSession::load_playlist(const std::string& playlist_name)  {
 
  */
 int DJSession::load_track_to_controller(const std::string& track_name) {
-    // Your implementation here
-    return 0; // Placeholder
+    AudioTrack* track = library_service.findTrack(track_name);
+    if (!track) {
+        std::cout << "[ERROR] Track '" << track_name << "' not found in library.\n";
+        stats.errors++;
+        return 0; // MISS due to error
+    }
+    std::cout << "[System] Loading track '" << track_name << "' to controller..." << std::endl;
+    int result = controller_service.loadTrackToCache(*track);
+    if (result == 1) {
+        stats.cache_hits++;
+        return 1; // HIT
+    } else {
+        stats.cache_misses++;
+        if (result == -1) {
+            stats.cache_evictions++;
+            return -1; // MISS with eviction
+        }
+        return 0; // MISS
+    }
 }
 
 /**
@@ -75,8 +92,27 @@ int DJSession::load_track_to_controller(const std::string& track_name) {
  */
 bool DJSession::load_track_to_mixer_deck(const std::string& track_title) {
     std::cout << "[System] Delegating track transfer to MixingEngineService for: " << track_title << std::endl;
-    // your implementation here
-    return false; // Placeholder
+    AudioTrack* track_in_cache = controller_service.getTrackFromCache(track_title);
+    if (!track_in_cache) {
+        std::cout << "[ERROR] Track '" << track_title << "' not found in cache.\n";
+        stats.errors++;
+        return false;
+    }
+    int deck_index = mixing_service.loadTrackToDeck(*track_in_cache);
+    if (deck_index == -1) {
+        std::cout << "[ERROR] Failed to load track '" << track_title << "' to mixer deck.\n";
+        stats.errors++;
+
+        return false;
+    }
+    else if (deck_index == 0) {
+        stats.deck_loads_a++;
+        stats.transitions++;
+    } else {
+        stats.deck_loads_b++;
+        stats.transitions++;
+    }
+    return true;
 }
 
 /**
@@ -107,8 +143,98 @@ void DJSession::simulate_dj_performance() {
     std::cout << "Cache Capacity: " << session_config.controller_cache_size << " slots (LRU policy)" << std::endl;
     std::cout << "\n--- Processing Tracks ---" << std::endl;
 
-    std::cout << "TODO: Implement the DJ performance simulation workflow here." << std::endl;
-    // Your implementation here
+    std::cout << "Starting DJ performance simulation workflow..." << std::endl;
+    if (play_all) {
+        // Extract and sort all playlist names
+        std::vector<std::string> playlist_names;
+        for (const auto& pair : session_config.playlists) {
+            playlist_names.push_back(pair.first);
+        }
+        std::sort(playlist_names.begin(), playlist_names.end());
+        
+        // Iterate through each playlist
+        for (size_t i = 0; i < playlist_names.size(); ++i) {
+            std::string playlist_name = playlist_names[i];
+            
+            // Load the playlist
+            if (!load_playlist(playlist_name)) {
+                std::cout << "[ERROR] Failed to load playlist: " << playlist_name << std::endl;
+                continue;
+            }
+            
+            // Track Processing Loop
+            for (size_t j = 0; j < track_titles.size(); ++j) {
+                std::cout << "\n-- Processing: " << track_titles[j] << " --" << std::endl;
+                stats.tracks_processed++;
+                
+                // Cache Loading Phase
+                int load_result = load_track_to_controller(track_titles[j]);
+                
+                // Deck Loading Phase
+                if (!load_track_to_mixer_deck(track_titles[j])) {
+                    continue;
+                }
+            }
+            
+            // Print summary after playlist completion
+            print_session_summary();
+            
+            // Reset statistics for next playlist
+            stats.tracks_processed = 0;
+            stats.cache_hits = 0;
+            stats.cache_misses = 0;
+            stats.cache_evictions = 0;
+            stats.deck_loads_a = 0;
+            stats.deck_loads_b = 0;
+            stats.transitions = 0;
+            stats.errors = 0;
+        }
+        
+        std::cout << "Session cancelled by user or all playlists played." << std::endl;
+        
+    } else {
+        // Interactive mode
+        while (true) {
+            std::string playlist_name = display_playlist_menu_from_config();
+            
+            // If empty string returned (cancelled), break the loop
+            if (playlist_name.empty()) {
+                break;
+            }
+            // Load the playlist
+            if (!load_playlist(playlist_name)) {
+                std::cout << "[ERROR] Failed to load playlist: " << playlist_name << std::endl;
+                continue; 
+            }
+            
+            // Track Processing Loop
+            for (size_t j = 0; j < track_titles.size(); ++j) {
+                std::cout << "\n-- Processing: " << track_titles[j] << " --" << std::endl;
+                stats.tracks_processed++;
+                
+                // Cache Loading Phase
+                int load_result = load_track_to_controller(track_titles[j]);
+                
+                // Deck Loading Phase
+                if (!load_track_to_mixer_deck(track_titles[j])) {
+                    continue;
+                }
+            }
+            print_session_summary();
+            
+            // Reset statistics for next playlist
+            stats.tracks_processed = 0;
+            stats.cache_hits = 0;
+            stats.cache_misses = 0;
+            stats.cache_evictions = 0;
+            stats.deck_loads_a = 0;
+            stats.deck_loads_b = 0;
+            stats.transitions = 0;
+            stats.errors = 0;
+        }
+        
+        std::cout << "Session cancelled by user or all playlists played." << std::endl;
+    }
 }
 
 

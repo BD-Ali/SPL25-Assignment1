@@ -30,7 +30,7 @@ bool LRUCache::put(PointerWrapper<AudioTrack> track) {
     // If an empty slot is found store the track there
     if (empty_idx != max_size) {
         slots[empty_idx].store(std::move(track), ++access_counter);  
-        return true;
+        return false;
     }
 
     // Cache is full, remove least recently used track and store the new track

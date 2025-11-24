@@ -25,7 +25,7 @@ int DJControllerService::loadTrackToCache(AudioTrack& track) {
     // If clone is nullptr, log error and return failure code
     if (!cloned_track) {
         std::cout << "[ERROR] Track: \"" << track.get_title() << "\" failed to clone" << std::endl;
-        return -1;
+        return 0;
     }
     
     // load the track data

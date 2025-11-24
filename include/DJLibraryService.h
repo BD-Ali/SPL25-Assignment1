@@ -15,6 +15,12 @@ class DJLibraryService {
 public:
     DJLibraryService(const Playlist& playlist);
     DJLibraryService() = default;
+    
+    /**
+     * Destructor to clean up allocated resources
+     */
+    ~DJLibraryService();
+
 
     /**
      * @brief Build the track library from parsed config data
