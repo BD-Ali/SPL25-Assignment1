@@ -114,8 +114,8 @@ void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name,
         playlist.add_track(cloned_track);
         
         std::cout << "[INFO] Added " << library[idx - 1]->get_title() << " to playlist " << playlist.get_name() << std::endl;
-        std::cout << "[INFO] Playlist loaded:" << playlist.get_name() << " (" << playlist.get_track_count() << " tracks)." << std::endl;
     }
+    std::cout << "[INFO] Playlist loaded:" << playlist.get_name() << " (" << playlist.get_track_count() << " tracks)." << std::endl;
 }
 
 /**
