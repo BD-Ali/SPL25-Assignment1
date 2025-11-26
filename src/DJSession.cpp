@@ -169,11 +169,13 @@ void DJSession::simulate_dj_performance() {
                 
                 // Cache Loading Phase
                 int load_result = load_track_to_controller(track_titles[j]);
-                
+                controller_service.displayCacheStatus();
+
                 // Deck Loading Phase
                 if (!load_track_to_mixer_deck(track_titles[j])) {
                     continue;
                 }
+                mixing_service.displayDeckStatus();
             }
             
             // Print summary after playlist completion
@@ -214,11 +216,13 @@ void DJSession::simulate_dj_performance() {
                 
                 // Cache Loading Phase
                 int load_result = load_track_to_controller(track_titles[j]);
+                controller_service.displayCacheStatus();
                 
                 // Deck Loading Phase
                 if (!load_track_to_mixer_deck(track_titles[j])) {
                     continue;
                 }
+                mixing_service.displayDeckStatus();
             }
             print_session_summary();
             

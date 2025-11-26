@@ -16,10 +16,11 @@ Playlist::~Playlist() {
     while (current) {
         PlaylistNode* to_delete = current;
         current = current->next;
+        delete to_delete->track;
         delete to_delete;
     }
     track_count = 0;
-}
+}   
 
 // Copy constructor
 Playlist::Playlist(const Playlist& other)
@@ -30,7 +31,9 @@ Playlist::Playlist(const Playlist& other)
     #endif
     PlaylistNode* current = other.head;
     while (current) {
-        add_track(current->track);
+        // clone the track
+        AudioTrack* cloned_track = current->track->clone().release();
+        add_track(cloned_track);
         current = current->next;
     }
 }
@@ -46,6 +49,7 @@ Playlist& Playlist::operator=(const Playlist& other) {
         PlaylistNode* current = head;
         while (current) {
             PlaylistNode* to_delete = current;
+            delete to_delete->track;
             current = current->next;
             delete to_delete;
         }
@@ -56,7 +60,8 @@ Playlist& Playlist::operator=(const Playlist& other) {
         playlist_name = other.playlist_name;
         current = other.head;
         while (current) {
-            add_track(current->track);
+            AudioTrack* cloned_track = current->track->clone().release();
+            add_track(cloned_track);
             current = current->next;
         }
     }
@@ -103,7 +108,8 @@ void Playlist::remove_track(const std::string& title) {
         } else {
             head = current->next;
         }
-        delete current;  // Free the node memory
+        delete current->track; 
+        delete current;
 
         track_count--;
         std::cout << "Removed '" << title << "' from playlist" << std::endl;

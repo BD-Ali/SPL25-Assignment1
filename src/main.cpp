@@ -23,7 +23,7 @@
  * Students must fix the issues to make this program run cleanly.
  */
 
-bool del = true; // the caller owns the AudioTrack pointers (playlists just borrow them)
+bool del = false; // the caller owns the AudioTrack pointers (playlists just borrow them)
 void test_phase_1_memory_leaks() {
     
     std::cout << "\n======== PHASE 1: MEMORY LEAK TESTING ========" << std::endl;
