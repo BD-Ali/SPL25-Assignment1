@@ -7,12 +7,10 @@
  * TODO: Implement MixingEngineService constructor
  */
 MixingEngineService::MixingEngineService()
-    : active_deck(0)
+    : active_deck(0), auto_sync(false), bpm_tolerance(0)
 {
     decks[0] = nullptr;
     decks[1] = nullptr;
-    auto_sync = false;
-    bpm_tolerance = 0; 
     std::cout << "[MixingEngineService] Initialized with 2 empty decks.\n" << std::endl;
 }
 

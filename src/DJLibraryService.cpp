@@ -8,7 +8,7 @@
 
 
 DJLibraryService::DJLibraryService(const Playlist& playlist) 
-    : playlist(playlist) {}
+    : playlist(playlist), library() {}
 /**
  * @brief Load a playlist from track indices referencing the library
  * @param library_tracks Vector of track info from config
@@ -124,8 +124,9 @@ void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name,
  */
 std::vector<std::string> DJLibraryService::getTrackTitles() const {
     std::vector<std::string> titles;
-    for (size_t i = 0; i < playlist.get_track_count(); ++i) {
-        titles.push_back(playlist.getTracks()[i]->get_title());
+    std::vector<AudioTrack*> tracks = playlist.getTracks();  
+    for (size_t i = 0; i < tracks.size(); ++i) {        
+        titles.push_back(tracks[i]->get_title());
     }
     return titles;
 }

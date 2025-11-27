@@ -14,7 +14,7 @@
 class DJLibraryService {
 public:
     DJLibraryService(const Playlist& playlist);
-    DJLibraryService() = default;
+    DJLibraryService(): playlist(), library(){}
     
     /**
      * Destructor to clean up allocated resources
