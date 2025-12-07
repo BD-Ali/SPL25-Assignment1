@@ -164,7 +164,7 @@ int main(int argc, char* argv[]) {
      * - If "-A" is provided as the second argument, enable play_all mode
      */
     bool run_software = true;
-    bool play_all = true;
+    bool play_all;
     if (argc > 1 && std::string(argv[1]) == "-I") {
         run_software = true;
     }

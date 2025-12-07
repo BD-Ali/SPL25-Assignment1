@@ -65,7 +65,6 @@ public:
      * @brief Destructor
      */
     ~DJSession();
-
     // ========== ORCHESTRATION METHODS ==========
 
 

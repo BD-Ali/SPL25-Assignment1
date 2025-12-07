@@ -20,7 +20,11 @@ struct PlaylistNode {
     PlaylistNode* next;
 
     PlaylistNode(AudioTrack* t) : track(t), next(nullptr) {}
-    ~PlaylistNode() = default;
+    ~PlaylistNode() {
+        delete track; // Free the AudioTrack when the node is destroyed
+    }
+    PlaylistNode(const PlaylistNode& other) = delete;
+    PlaylistNode& operator=(const PlaylistNode& other) = delete;
 };
 
 class Playlist {

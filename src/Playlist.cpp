@@ -16,7 +16,6 @@ Playlist::~Playlist() {
     while (current) {
         PlaylistNode* to_delete = current;
         current = current->next;
-        delete to_delete->track;
         delete to_delete;
     }
     track_count = 0;
@@ -49,7 +48,6 @@ Playlist& Playlist::operator=(const Playlist& other) {
         PlaylistNode* current = head;
         while (current) {
             PlaylistNode* to_delete = current;
-            delete to_delete->track;
             current = current->next;
             delete to_delete;
         }
@@ -108,7 +106,6 @@ void Playlist::remove_track(const std::string& title) {
         } else {
             head = current->next;
         }
-        delete current->track; 
         delete current;
 
         track_count--;
